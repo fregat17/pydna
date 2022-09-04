@@ -36,7 +36,7 @@ import logging as _logging
 _module_logger = _logging.getLogger("pydna." + __name__)
 
 
-def _annealing_positions(primer, template, limit=15, head_lim=5, max_mis=1):
+def _annealing_positions(primer, template, limit=15, head_lim=6, max_mis=1):
     """Finds the annealing position(s) for a primer on a template where the
     primer anneals perfectly with at least limit nucleotides in the 3' part.
     The primer is the lower strand in the figure below.
@@ -104,7 +104,7 @@ def _annealing_positions(primer, template, limit=15, head_lim=5, max_mis=1):
     head_mis = head[head_lim:]
 
     positions = [
-        m.start() for m in _regex.finditer(f"(?i)(?=({head_fwd})({head_mis}){{{max_mis}<=1}})", template)
+        m.start() for m in _regex.finditer(f"(?i)(?=({head_fwd})({head_mis}){{s<={max_mis}}})", template)
     ]
 
     if positions:
@@ -147,7 +147,7 @@ class Anneal(object, metaclass=_Memoize):
     limit : int, optional
         The limit of PCR primer annealing, default is 13 bp."""
 
-    def __init__(self, primers, template, limit=13, head_lim=5, max_mis=1, **kwargs):
+    def __init__(self, primers, template, limit=13, head_lim=6, max_mis=1, **kwargs):
         r"""The Anneal class has to be initiated with at least an iterable of
         primers and a template.
 
