@@ -27,12 +27,15 @@ from Bio.SeqFeature import CompoundLocation as _CompoundLocation
 from pydna.seq import Seq as _Seq
 import itertools as _itertools
 import re as _re
+import regex as _regex
 import copy as _copy
 import operator as _operator
 import os as _os
 import logging as _logging
 
 _module_logger = _logging.getLogger("pydna." + __name__)
+
+INTERNAL_ANNEAL_LIMIT = 5
 
 
 def _annealing_positions(primer, template, limit=15):
@@ -99,8 +102,11 @@ def _annealing_positions(primer, template, limit=15):
     for key in table:
         head = head.replace(key, table[key])
 
+    head_fwd = head[:INTERNAL_ANNEAL_LIMIT]
+    head_mis = head[INTERNAL_ANNEAL_LIMIT:]
+
     positions = [
-        m.start() for m in _re.finditer("(?={})".format(head), template, _re.I)
+        m.start() for m in _regex.finditer(f"(?i)(?=({head_fwd})({head_mis}){{s<=1}})", template)
     ]
 
     if positions:
@@ -111,7 +117,7 @@ def _annealing_positions(primer, template, limit=15):
             tm = template[match_start + limit: match_start + limit + length]
             footprint = len(
                 list(
-                    _itertools.takewhile(
+                    itertools.takewhile(
                         lambda x: x[0].lower() == x[1].lower(), zip(tail, tm)
                     )
                 )
