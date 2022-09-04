@@ -115,7 +115,7 @@ def _annealing_positions(primer, template, limit=15, head_lim=6, max_mis=1):
             tm = template[match_start + limit: match_start + limit + length]
             footprint = len(
                 list(
-                    itertools.takewhile(
+                    _itertools.takewhile(
                         lambda x: x[0].lower() == x[1].lower(), zip(tail, tm)
                     )
                 )
