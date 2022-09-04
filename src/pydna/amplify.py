@@ -35,10 +35,8 @@ import logging as _logging
 
 _module_logger = _logging.getLogger("pydna." + __name__)
 
-INTERNAL_ANNEAL_LIMIT = 5
 
-
-def _annealing_positions(primer, template, limit=15):
+def _annealing_positions(primer, template, limit=15, head_lim=5, max_mis=1):
     """Finds the annealing position(s) for a primer on a template where the
     primer anneals perfectly with at least limit nucleotides in the 3' part.
     The primer is the lower strand in the figure below.
@@ -102,11 +100,11 @@ def _annealing_positions(primer, template, limit=15):
     for key in table:
         head = head.replace(key, table[key])
 
-    head_fwd = head[:INTERNAL_ANNEAL_LIMIT]
-    head_mis = head[INTERNAL_ANNEAL_LIMIT:]
+    head_fwd = head[:head_lim]
+    head_mis = head[head_lim:]
 
     positions = [
-        m.start() for m in _regex.finditer(f"(?i)(?=({head_fwd})({head_mis}){{s<=1}})", template)
+        m.start() for m in _regex.finditer(f"(?i)(?=({head_fwd})({head_mis}){{{max_mis}<=1}})", template)
     ]
 
     if positions:
@@ -149,7 +147,7 @@ class Anneal(object, metaclass=_Memoize):
     limit : int, optional
         The limit of PCR primer annealing, default is 13 bp."""
 
-    def __init__(self, primers, template, limit=13, **kwargs):
+    def __init__(self, primers, template, limit=13, head_lim=5, max_mis=1, **kwargs):
         r"""The Anneal class has to be initiated with at least an iterable of
         primers and a template.
 
@@ -227,6 +225,8 @@ class Anneal(object, metaclass=_Memoize):
         self.template = _copy.deepcopy(template)
 
         self.limit = limit
+        self.head_lim = head_lim
+        self.max_mis = max_mis
         self.kwargs = kwargs
 
         self._products = None
@@ -253,7 +253,7 @@ class Anneal(object, metaclass=_Memoize):
                         position=tcl - pos - min(self.template.seq.ovhg, 0),
                         footprint=fp,
                     )
-                    for pos, fp in _annealing_positions(str(p.seq), tc, self.limit)
+                    for pos, fp in _annealing_positions(str(p.seq), tc, self.limit, self.head_lim, self.max_mis)
                     if pos < tcl
                 )
             )
@@ -265,7 +265,7 @@ class Anneal(object, metaclass=_Memoize):
                         position=pos + max(0, self.template.seq.ovhg),
                         footprint=fp,
                     )
-                    for pos, fp in _annealing_positions(str(p.seq), tw, self.limit)
+                    for pos, fp in _annealing_positions(str(p.seq), tw, self.limit, self.head_lim, self.max_mis)
                     if pos < twl
                 )
             )
