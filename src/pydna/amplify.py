@@ -286,7 +286,8 @@ class Anneal(object, metaclass=_Memoize):
                             "label": [fp.name],
                             "ApEinfo_fwdcolor": ["#baffa3"],
                             "ApEinfo_revcolor": ["#ffbaba"],
-                            "facecolor_queen": ["#009933"]
+                            "facecolor_queen": ["#009933"],
+                            "edgecolor_queen": ["#009933"]
                         },
                     )
                 )
@@ -306,7 +307,8 @@ class Anneal(object, metaclass=_Memoize):
                         "label": [fp.name],
                         "ApEinfo_fwdcolor": ["#baffa3"],
                         "ApEinfo_revcolor": ["#ffbaba"],
-                        "facecolor_queen": ["#009933"]
+                        "facecolor_queen": ["#009933"],
+                        "edgecolor_queen": ["#009933"]
                     },
                 )
                 self.template.features.append(sf)
@@ -324,7 +326,8 @@ class Anneal(object, metaclass=_Memoize):
                             "label": [rp.name],
                             "ApEinfo_fwdcolor": ["#baffa3"],
                             "ApEinfo_revcolor": ["#ffbaba"],
-                            "facecolor_queen": ["#cc00cc"]
+                            "facecolor_queen": ["#cc00cc"],
+                            "edgecolor_queen": ["#cc00cc"]
                         },
                     )
                 )
@@ -343,7 +346,8 @@ class Anneal(object, metaclass=_Memoize):
                         location_operator="join",
                         strand=-1,
                         qualifiers={"label": [rp.name],
-                                    "facecolor_queen": ["#cc00cc"]},
+                                    "facecolor_queen": ["#cc00cc"],
+                                    "edgecolor_queen": ["#cc00cc"]},
                     )
                 )
 
